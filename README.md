@@ -11,7 +11,7 @@ A Chrome extension that sorts downloaded files into folders based on file extens
 
 <p align="center">
   <img width="767" height="490" alt="1" src="https://github.com/user-attachments/assets/261b182e-6fdb-4544-811e-452948f13d71" /><br>
-  Popup.
+  Settings page.
 </p>
 
 ## Installation
