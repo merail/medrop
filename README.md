@@ -11,3 +11,7 @@ A Chrome extension that sorts downloaded files into folders based on file extens
 ## Icon
 
 Icon: Google Material Symbols ("stack"), licensed under Apache License 2.0.
+
+## License
+
+MIT — see [LICENSE](LICENSE).
