@@ -55,9 +55,22 @@ rulesContainer.addEventListener('dragover', (e) => {
   }
 });
 
+function removeRuleItem(item) {
+  const height = item.getBoundingClientRect().height;
+  item.style.height = `${height}px`;
+  item.style.overflow = 'hidden';
+  item.getBoundingClientRect();
+  requestAnimationFrame(() => {
+    item.classList.add('leaving');
+    item.style.height = '0px';
+    item.style.marginBottom = '0px';
+  });
+  item.addEventListener('transitionend', () => item.remove(), { once: true });
+}
+
 function addRuleRow(extensions = '', folder = '') {
   const item = document.createElement('div');
-  item.className = 'rule-item';
+  item.className = 'rule-item entering';
   item.draggable = true;
   item.innerHTML = `
     <div class="rule-row">
@@ -78,12 +91,25 @@ function addRuleRow(extensions = '', folder = '') {
   const errorEl = item.querySelector('.field-error');
   folderInput.addEventListener('input', () => validateFolderInput(folderInput, errorEl));
 
-  item.querySelector('.remove-rule').addEventListener('click', () => item.remove());
+  item.querySelector('.remove-rule').addEventListener('click', () => removeRuleItem(item));
 
   item.addEventListener('dragstart', () => item.classList.add('dragging'));
   item.addEventListener('dragend', () => item.classList.remove('dragging'));
 
   rulesContainer.appendChild(item);
+
+  const targetHeight = item.getBoundingClientRect().height;
+  item.style.height = '0px';
+  item.style.overflow = 'hidden';
+  item.getBoundingClientRect();
+  requestAnimationFrame(() => {
+    item.classList.remove('entering');
+    item.style.height = `${targetHeight}px`;
+  });
+  item.addEventListener('transitionend', () => {
+    item.style.height = '';
+    item.style.overflow = '';
+  }, { once: true });
 }
 
 function parseExtensions(value) {
@@ -93,12 +119,14 @@ function parseExtensions(value) {
     .filter(Boolean);
 }
 
+let statusTimeout;
 function showStatus(message, isError) {
+  clearTimeout(statusTimeout);
   status.textContent = message;
   status.classList.toggle('error', isError);
-  setTimeout(() => {
-    status.textContent = '';
-    status.classList.remove('error');
+  status.classList.add('visible');
+  statusTimeout = setTimeout(() => {
+    status.classList.remove('visible');
   }, isError ? 3000 : 1500);
 }
 
