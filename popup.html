@@ -1,0 +1,306 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<title>MeDrop</title>
+<style>
+  :root {
+    --bg: #0f1115;
+    --card: #181b21;
+    --card-alt: #1e2229;
+    --text: #e8eaed;
+    --muted: #8b909a;
+    --border: #2a2f38;
+    --accent: #5b8def;
+    --accent-hover: #4a7be0;
+    --danger: #ef5a5a;
+    --danger-bg: #2a1a1c;
+    --success: #4ade80;
+  }
+
+  * { box-sizing: border-box; }
+
+  html, body {
+    margin: 0;
+  }
+
+  body {
+    width: 360px;
+    max-height: 560px;
+    overflow-y: auto;
+    background: var(--bg);
+    color: var(--text);
+    font-family: -apple-system, "Segoe UI", system-ui, sans-serif;
+  }
+
+  .page {
+    padding: 16px;
+  }
+
+  header {
+    margin-bottom: 14px;
+    padding-bottom: 12px;
+    border-bottom: 1px solid var(--border);
+  }
+
+  h1 {
+    font-size: 16px;
+    margin: 0 0 2px;
+    letter-spacing: -0.01em;
+  }
+
+  .subtitle {
+    margin: 0;
+    color: var(--muted);
+    font-size: 11px;
+  }
+
+  .toggle-row {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 14px;
+  }
+
+  .toggle-label {
+    font-size: 12px;
+    color: var(--text);
+  }
+
+  .switch {
+    position: relative;
+    display: inline-block;
+    width: 36px;
+    height: 20px;
+    flex-shrink: 0;
+  }
+
+  .switch input {
+    opacity: 0;
+    width: 0;
+    height: 0;
+  }
+
+  .slider {
+    position: absolute;
+    inset: 0;
+    background: var(--card-alt);
+    border: 1px solid var(--border);
+    border-radius: 999px;
+    cursor: pointer;
+    transition: background .15s, border-color .15s;
+  }
+
+  .slider::before {
+    content: "";
+    position: absolute;
+    height: 14px;
+    width: 14px;
+    left: 2px;
+    top: 2px;
+    background: var(--muted);
+    border-radius: 50%;
+    transition: transform .15s, background .15s;
+  }
+
+  .switch input:checked + .slider {
+    background: var(--accent);
+    border-color: var(--accent);
+  }
+
+  .switch input:checked + .slider::before {
+    transform: translateX(16px);
+    background: #fff;
+  }
+
+  .card {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 14px 16px;
+    margin-bottom: 14px;
+  }
+
+  .card h2 {
+    font-size: 13px;
+    margin: 0 0 4px;
+  }
+
+  .hint {
+    margin: 0 0 12px;
+    color: var(--muted);
+    font-size: 11px;
+    line-height: 1.4;
+  }
+
+  label {
+    display: block;
+    font-size: 11px;
+    color: var(--muted);
+  }
+
+  input[type="text"] {
+    width: 100%;
+    padding: 7px 10px;
+    border: 1px solid var(--border);
+    border-radius: 7px;
+    font-size: 12px;
+    background: var(--card-alt);
+    color: var(--text);
+  }
+
+  label input[type="text"] {
+    margin-top: 6px;
+  }
+
+  input[type="text"]:focus {
+    outline: none;
+    border-color: var(--accent);
+    background: #22262e;
+  }
+
+  input[type="text"]::placeholder {
+    color: #5a5f68;
+  }
+
+  input[type="text"].invalid {
+    border-color: var(--danger);
+    background: var(--danger-bg);
+  }
+
+  .field-error {
+    margin: 5px 0 0;
+    color: var(--danger);
+    font-size: 11px;
+  }
+
+  .rule-item {
+    margin-bottom: 8px;
+  }
+
+  .rule-item.dragging {
+    opacity: 0.4;
+  }
+
+  .rule-row {
+    display: grid;
+    grid-template-columns: auto 1fr auto 1fr auto;
+    align-items: center;
+    gap: 6px;
+  }
+
+  .rule-row .arrow {
+    color: var(--muted);
+    font-size: 12px;
+  }
+
+  .drag-handle {
+    cursor: grab;
+    color: var(--muted);
+    font-size: 12px;
+    padding: 0 1px;
+    user-select: none;
+  }
+
+  .rule-row input,
+  .rule-row button {
+    -webkit-user-drag: none;
+  }
+
+  .remove-rule {
+    width: 26px;
+    height: 26px;
+    flex-shrink: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 7px;
+    border: 1px solid var(--border);
+    background: var(--card-alt);
+    color: var(--danger);
+    cursor: pointer;
+    padding: 0;
+  }
+
+  .remove-rule:hover {
+    background: var(--danger-bg);
+    border-color: #4a2528;
+  }
+
+  .btn {
+    border: none;
+    border-radius: 7px;
+    padding: 8px 14px;
+    font-size: 12px;
+    cursor: pointer;
+  }
+
+  .btn.secondary {
+    background: var(--card-alt);
+    border: 1px solid var(--border);
+    color: var(--text);
+  }
+
+  .btn.secondary:hover {
+    background: #262b33;
+  }
+
+  .btn.primary {
+    background: var(--accent);
+    color: #fff;
+  }
+
+  .btn.primary:hover {
+    background: var(--accent-hover);
+  }
+
+  .actions {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+
+  #status {
+    font-size: 12px;
+    color: var(--success);
+  }
+
+  #status.error {
+    color: var(--danger);
+  }
+
+</style>
+</head>
+<body>
+  <div class="page">
+    <header>
+      <h1>MeDrop</h1>
+      <p class="subtitle" data-i18n="popupSubtitle">Quick sorting settings</p>
+    </header>
+
+    <div class="toggle-row">
+      <label class="switch">
+        <input type="checkbox" id="enabledToggle">
+        <span class="slider"></span>
+      </label>
+      <span class="toggle-label" id="enabledLabel">Sorting enabled</span>
+    </div>
+
+    <section class="card">
+      <h2 data-i18n="rulesHeading">Extension rules</h2>
+      <p class="hint" data-i18n="rulesHintPopup">Checked top to bottom, drag to reorder</p>
+      <div id="rules"></div>
+      <button id="addRule" class="btn secondary" data-i18n="addRuleButton">+ Add rule</button>
+    </section>
+
+    <p class="hint" style="margin: 0 0 12px;" data-i18n="popupSettingsHint">Default folder and exclusions are on the settings page</p>
+
+    <div class="actions">
+      <button id="save" class="btn primary" data-i18n="saveButton">Save</button>
+      <span id="status"></span>
+    </div>
+  </div>
+
+  <script src="options.js"></script>
+</body>
+</html>
